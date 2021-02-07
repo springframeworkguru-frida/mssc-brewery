@@ -2,6 +2,10 @@ package guru.springframework.msscbrewery.web.controller;
 
 import guru.springframework.msscbrewery.services.CustomerService;
 import guru.springframework.msscbrewery.web.model.CustomerDto;
+import java.util.ArrayList;
+import java.util.List;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +31,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity handlePost(@RequestBody  CustomerDto customerDto){
+    public ResponseEntity handlePost(@Valid @RequestBody  CustomerDto customerDto){
 
         CustomerDto savedDto = customerService.savedCustomer(customerDto);
 
@@ -38,7 +42,8 @@ public class CustomerController {
     }
 
     @PutMapping({"/{customerId}"})
-    public ResponseEntity handleUpdate(@PathVariable("customerId") UUID customerId, CustomerDto customerDto){
+    public ResponseEntity handleUpdate(@PathVariable("customerId") UUID customerId, @Valid @RequestBody CustomerDto customerDto){
+//valid will cause springframework to go ahead and kick in the bean validation,requestbody will bind the JSON body to that customerDTO object.
 
         customerService.updateCustomer(customerId, customerDto);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -49,4 +54,6 @@ public class CustomerController {
     public void deleteCustomer(@PathVariable("customerId") UUID customerId, CustomerDto customerDto){
         customerService.deleteById(customerId);
     }
+
+
 }
