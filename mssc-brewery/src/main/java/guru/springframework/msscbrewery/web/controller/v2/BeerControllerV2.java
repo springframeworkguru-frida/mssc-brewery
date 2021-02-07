@@ -3,6 +3,10 @@ package guru.springframework.msscbrewery.web.controller.v2;
 import guru.springframework.msscbrewery.services.v2.BeerServiceV2;
 import guru.springframework.msscbrewery.web.model.v2.BeerDtoV2;
 import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.hibernate.validator.internal.metadata.aggregated.rule.OverridingMethodMustNotAlterParameterConstraints;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
+@Slf4j
+@RequiredArgsConstructor
 @Validated
 //peform validation on the method input parameters,method level validations
 @RequestMapping("/api/v2/beer")
@@ -23,10 +28,10 @@ import java.util.UUID;
 public class BeerControllerV2 {
     private final BeerServiceV2 beerServiceV2;
 
-    public BeerControllerV2(BeerServiceV2 beerServiceV2) {
-        this.beerServiceV2 = beerServiceV2;
-    }
-
+ //   public BeerControllerV2(BeerServiceV2 beerServiceV2) {
+ //       this.beerServiceV2 = beerServiceV2;
+ //   }
+//这个可以由加@RequiredArgsConstructor替代
     @GetMapping({"/{beerId}"})
     public ResponseEntity<BeerDtoV2> getBeer(@NotNull @PathVariable("beerId") UUID beerId){
 
@@ -36,9 +41,11 @@ public class BeerControllerV2 {
     @PostMapping // POST - create new beer
     public ResponseEntity handlePost(@Valid @NotNull @RequestBody BeerDtoV2 beerDto){
 
-        BeerDtoV2 savedDto = beerServiceV2.saveNewBeer(beerDto);
+        log.debug("in handle post...");
 
-        HttpHeaders headers = new HttpHeaders();
+        val savedDto = beerServiceV2.saveNewBeer(beerDto);
+
+        val headers = new HttpHeaders();
         //todo add hostname to url
         headers.add("Location", "/api/v1/beer/" + savedDto.getId().toString());
 
